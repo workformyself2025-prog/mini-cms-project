@@ -15,14 +15,22 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// 🔹 MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch(err => console.log("❌ DB Error:", err));
+if (!process.env.MONGO_URI) {
+  console.log("⚠️ MONGO_URI not found");
+}
 
-mongoose.connection.on("error", err => {
-  console.log("MongoDB runtime error:", err);
-});
+// 🔹 MongoDB Connection
+const startServer = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("✅ MongoDB Connected");
+  } catch (err) {
+    console.log("❌ DB Error:", err.message);
+  }
+};
+
+startServer();
+
 
 // 🔹 Schema
 const testSchema = new mongoose.Schema({
