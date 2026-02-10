@@ -34,15 +34,17 @@ startServer();
 
 // 🔹 Schema
 const testSchema = new mongoose.Schema({
-  name: String,
+  name: { type: String, unique: true },
   age: Number
 });
+
 const Test = mongoose.model("Test", testSchema);
 
 const userSchema = new mongoose.Schema({
-  email: String,
+  email: { type: String, unique: true },
   password: String
 });
+
 
 const AuthUser = mongoose.model("AuthUser", userSchema);
 
@@ -64,28 +66,33 @@ app.get("/", (req, res) => {
 
 // 🔹 Data add karne ka route
 app.post("/add", async (req, res) => {
-  try {
-    const newData = new Test(req.body);
-    await newData.save();
-    res.send("Data Saved");
-  } catch (err) {
-    res.status(500).send(err);
+  const existing = await Test.findOne({ name: req.body.name });
+  if (existing) {
+    return res.status(400).send("User name already exists");
   }
+
+  const newData = new Test(req.body);
+  await newData.save();
+  res.send("Data Saved");
 });
+
 
 app.post("/register", async (req, res) => {
   const { email, password } = req.body;
 
+  const existingUser = await AuthUser.findOne({ email });
+  if (existingUser) {
+    return res.status(400).send("Email already registered");
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const newUser = new AuthUser({
-    email,
-    password: hashedPassword
-  });
-
+  const newUser = new AuthUser({ email, password: hashedPassword });
   await newUser.save();
+
   res.send("Registered Successfully");
 });
+
 
 
 app.post("/login", async (req, res) => {
