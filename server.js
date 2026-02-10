@@ -48,7 +48,7 @@ const Blog = mongoose.model("Blog", blogSchema);
 
 // 🔹 ROUTE (frontend yahan se baat karega)
 app.get("/", (req, res) => {
-  res.send("Backend + MongoDB working 🚀");
+  res.send("Server is live");
 });
 
 
@@ -150,7 +150,7 @@ app.delete("/blogs/:id", async (req, res) => {
 // 🔹 Server Start
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });
 
