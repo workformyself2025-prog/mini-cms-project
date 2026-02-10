@@ -66,15 +66,27 @@ app.get("/", (req, res) => {
 
 // 🔹 Data add karne ka route
 app.post("/add", async (req, res) => {
-  const existing = await Test.findOne({ name: req.body.name });
-  if (existing) {
-    return res.status(400).send("User name already exists");
-  }
+    const { name, age } = req.body;
 
-  const newData = new Test(req.body);
-  await newData.save();
-  res.send("Data Saved");
+    try {
+        // 🔴 CHECK DUPLICATE NAME
+        const existingUser = await User.findOne({ name });
+
+        if (existingUser) {
+            return res.status(400).send("User name already exists ❌");
+        }
+
+        // 🟢 SAVE NEW USER
+        const newUser = new User({ name, age });
+        await newUser.save();
+
+        res.send("User Added Successfully ✅");
+
+    } catch (err) {
+        res.status(500).send("Server Error");
+    }
 });
+
 
 
 app.post("/register", async (req, res) => {
