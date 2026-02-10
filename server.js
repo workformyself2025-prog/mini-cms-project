@@ -17,10 +17,12 @@ app.use(cors());
 
 // 🔹 MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch(err => console.log("❌ DB Error:", err));
 
-.then(() => console.log("✅ MongoDB Connected"))
-.catch(err => console.log("❌ DB Error:", err));
-
+mongoose.connection.on("error", err => {
+  console.log("MongoDB runtime error:", err);
+});
 
 // 🔹 Schema
 const testSchema = new mongoose.Schema({
